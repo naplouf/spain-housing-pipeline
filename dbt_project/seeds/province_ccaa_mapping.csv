@@ -1,0 +1,53 @@
+province_code,province_iso_code,province_name,mivau_province,mivau_ccaa,ccaa_code,ccaa_iso_code,ccaa_name,is_single_province_ccaa,is_autonomous_city
+04,ES-AL,Almería,Almería,Andalucía,01,ES-AN,Andalucía,false,false
+11,ES-CA,Cádiz,Cádiz,Andalucía,01,ES-AN,Andalucía,false,false
+14,ES-CO,Córdoba,Córdoba,Andalucía,01,ES-AN,Andalucía,false,false
+18,ES-GR,Granada,Granada,Andalucía,01,ES-AN,Andalucía,false,false
+21,ES-H,Huelva,Huelva,Andalucía,01,ES-AN,Andalucía,false,false
+23,ES-J,Jaén,Jaén,Andalucía,01,ES-AN,Andalucía,false,false
+29,ES-MA,Málaga,Málaga,Andalucía,01,ES-AN,Andalucía,false,false
+41,ES-SE,Sevilla,Sevilla,Andalucía,01,ES-AN,Andalucía,false,false
+22,ES-HU,Huesca,Huesca,Aragón,02,ES-AR,Aragón,false,false
+44,ES-TE,Teruel,Teruel,Aragón,02,ES-AR,Aragón,false,false
+50,ES-Z,Zaragoza,Zaragoza,Aragón,02,ES-AR,Aragón,false,false
+33,ES-O,Asturias,Asturias,Asturias (Principado de),03,ES-AS,Asturias,true,false
+07,ES-PM,Illes Balears,Balears (Illes),Balears (Illes),04,ES-IB,Illes Balears,true,false
+35,ES-GC,Las Palmas,Palmas (Las),Canarias,05,ES-CN,Canarias,false,false
+38,ES-TF,Santa Cruz de Tenerife,Santa Cruz de Tenerife,Canarias,05,ES-CN,Canarias,false,false
+39,ES-S,Cantabria,Cantabria,Cantabria,06,ES-CB,Cantabria,true,false
+05,ES-AV,Ávila,Ávila,Castilla y León,07,ES-CL,Castilla y León,false,false
+09,ES-BU,Burgos,Burgos,Castilla y León,07,ES-CL,Castilla y León,false,false
+24,ES-LE,León,León,Castilla y León,07,ES-CL,Castilla y León,false,false
+34,ES-P,Palencia,Palencia,Castilla y León,07,ES-CL,Castilla y León,false,false
+37,ES-SA,Salamanca,Salamanca,Castilla y León,07,ES-CL,Castilla y León,false,false
+40,ES-SG,Segovia,Segovia,Castilla y León,07,ES-CL,Castilla y León,false,false
+42,ES-SO,Soria,Soria,Castilla y León,07,ES-CL,Castilla y León,false,false
+47,ES-VA,Valladolid,Valladolid,Castilla y León,07,ES-CL,Castilla y León,false,false
+49,ES-ZA,Zamora,Zamora,Castilla y León,07,ES-CL,Castilla y León,false,false
+02,ES-AB,Albacete,Albacete,Castilla-La Mancha,08,ES-CM,Castilla-La Mancha,false,false
+13,ES-CR,Ciudad Real,Ciudad Real,Castilla-La Mancha,08,ES-CM,Castilla-La Mancha,false,false
+16,ES-CU,Cuenca,Cuenca,Castilla-La Mancha,08,ES-CM,Castilla-La Mancha,false,false
+19,ES-GU,Guadalajara,Guadalajara,Castilla-La Mancha,08,ES-CM,Castilla-La Mancha,false,false
+45,ES-TO,Toledo,Toledo,Castilla-La Mancha,08,ES-CM,Castilla-La Mancha,false,false
+08,ES-B,Barcelona,Barcelona,Cataluña,09,ES-CT,Cataluña,false,false
+17,ES-GI,Girona,Girona,Cataluña,09,ES-CT,Cataluña,false,false
+25,ES-L,Lleida,Lleida,Cataluña,09,ES-CT,Cataluña,false,false
+43,ES-T,Tarragona,Tarragona,Cataluña,09,ES-CT,Cataluña,false,false
+03,ES-A,Alicante,Alicante/Alacant,Comunidad Valenciana,10,ES-VC,Comunitat Valenciana,false,false
+12,ES-CS,Castellón,Castellón/Castelló,Comunidad Valenciana,10,ES-VC,Comunitat Valenciana,false,false
+46,ES-V,Valencia,Valencia/València,Comunidad Valenciana,10,ES-VC,Comunitat Valenciana,false,false
+06,ES-BA,Badajoz,Badajoz,Extremadura,11,ES-EX,Extremadura,false,false
+10,ES-CC,Cáceres,Cáceres,Extremadura,11,ES-EX,Extremadura,false,false
+15,ES-C,A Coruña,Coruña (A),Galicia,12,ES-GA,Galicia,false,false
+27,ES-LU,Lugo,Lugo,Galicia,12,ES-GA,Galicia,false,false
+32,ES-OR,Ourense,Ourense,Galicia,12,ES-GA,Galicia,false,false
+36,ES-PO,Pontevedra,Pontevedra,Galicia,12,ES-GA,Galicia,false,false
+28,ES-M,Madrid,Madrid,Madrid (Comunidad de),13,ES-MD,Madrid,true,false
+30,ES-MU,Murcia,Murcia,Murcia (Región de),14,ES-MC,Murcia,true,false
+31,ES-NA,Navarra,Navarra,Navarra (Comunidad Foral de),15,ES-NC,Navarra,true,false
+01,ES-VI,Araba/Álava,Araba/Alava,País Vasco,16,ES-PV,País Vasco,false,false
+20,ES-SS,Gipuzkoa,Gipuzkoa,País Vasco,16,ES-PV,País Vasco,false,false
+48,ES-BI,Bizkaia,Bizkaia,País Vasco,16,ES-PV,País Vasco,false,false
+26,ES-LO,La Rioja,Rioja (La),Rioja (La),17,ES-RI,La Rioja,true,false
+51,ES-CE,Ceuta,Ceuta,Ceuta y Melilla,18,ES-CE,Ceuta,false,true
+52,ES-ML,Melilla,Melilla,Ceuta y Melilla,19,ES-ML,Melilla,false,true

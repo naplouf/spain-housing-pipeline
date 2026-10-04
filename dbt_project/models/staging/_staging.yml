@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: stg_ine_ipv
+    description: "INE IPV, renamed and with English labels mapped to codes. Grain: ccaa_code x index_type x metric_type x year."
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [ccaa_code, index_type, metric_type, year]
+    columns:
+      - name: ccaa_code
+        description: "INE CCAA code (01-19); '00' = Nacional."
+        data_tests: [not_null]
+      - name: ccaa_name_ine
+        description: "CCAA name as INE publishes it (e.g. 'Madrid, Comunidad de')."
+      - name: is_national
+        description: "True for the Nacional aggregate."
+      - name: index_type
+        description: "general | new | second_hand"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [general, new, second_hand]
+      - name: metric_type
+        description: "index (annual average, base 2025=100) | annual_variation_pct"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [index, annual_variation_pct]
+      - name: year
+        data_tests: [not_null]
+      - name: value
+        description: "Index level or % variation. NULL where INE does not publish (Ceuta/Melilla new and second-hand)."
+
+  - name: stg_mivau_valor_tasado
+    description: "MIVAU appraised value per province and quarter. Grain: mivau_province x year x quarter."
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [mivau_province, year, quarter]
+    columns:
+      - name: mivau_ccaa
+        description: "CCAA header the province sits under in the MIVAU sheet ('Ceuta y Melilla' is one combined header)."
+        data_tests: [not_null]
+      - name: mivau_province
+        description: "Province label as MIVAU spells it; joins to the province_ccaa_mapping seed."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('province_ccaa_mapping')
+                field: mivau_province
+      - name: year
+        data_tests: [not_null]
+      - name: quarter
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+      - name: quarter_start_date
+        description: "First day of the quarter."
+      - name: valor_m2
+        description: "Average appraised value of free-market housing, EUR/m2. NULL when value_flag is set."
+      - name: value_flag
+        description: "no_data (blank in source) | not_representative ('n.r' in source) | NULL."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [no_data, not_representative]
+      - name: is_single_province_ccaa
+        description: "True when the CCAA has a single province, so the CCAA row is the province value."
+      - name: source_sheet
+        description: "Name of the .xls sheet the value came from (lineage)."
+
+  - name: stg_mivau_valor_tasado_ccaa
+    description: "MIVAU's published CCAA and national aggregates. Grain: mivau_ccaa x year x quarter."
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [mivau_ccaa, year, quarter]
+    columns:
+      - name: geo_level
+        description: "national | ccaa"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [national, ccaa]
+      - name: mivau_ccaa
+        description: "MIVAU CCAA header label, or 'TOTAL NACIONAL'."
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+      - name: quarter
+        data_tests: [not_null]
+      - name: quarter_start_date
+        description: "First day of the quarter."
+      - name: valor_m2
+        description: "Published average appraised value, EUR/m2."
+      - name: value_flag
+        description: "no_data | not_representative | NULL."

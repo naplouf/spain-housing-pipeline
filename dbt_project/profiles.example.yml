@@ -1,0 +1,14 @@
+# Copy into ~/.dbt/profiles.yml. Auth via `gcloud auth application-default login`
+# (method: oauth) - no keyfiles in the repo.
+spain_housing_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: <your-gcp-project-id>
+      dataset: spain_housing     # fallback schema; layers use staging/intermediate/marts
+      location: EU
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1

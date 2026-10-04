@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Parsed source files loaded by ingestion/load_to_bigquery.py"
+    database: "{{ target.project }}"
+    schema: raw
+    tables:
+      - name: ine_ipv
+        description: "INE Índice de Precios de Vivienda, table 79540 (base 2025=100). Annual, CCAA level, 2007-2025."
+      - name: mivau_valor_tasado
+        description: "MIVAU valor tasado medio de vivienda libre, table 35101000. Quarterly EUR/m2, province level, 1995 Q1-2026 Q2."
+      - name: mivau_valor_tasado_ccaa
+        description: "MIVAU's own published CCAA and TOTAL NACIONAL rows from table 35101000 (same sheets as the province rows)."

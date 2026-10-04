@@ -1,0 +1,42 @@
+name: 'spain_housing'
+version: '1.0.0'
+profile: 'spain_housing_pipeline'   # defined in ~/.dbt/profiles.yml (see profiles.example.yml)
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Base year for the rebased growth indices used to compare INE vs MIVAU trends
+  base_year: 2015
+  # Last complete year in both sources (MIVAU 2026 has only Q1-Q2)
+  last_full_year: 2025
+  # Start of the 'recent' growth window (post-COVID recovery)
+  recent_base_year: 2020
+
+models:
+  spain_housing:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  spain_housing:
+    +schema: seeds
+    province_ccaa_mapping:
+      +column_types:
+        province_code: string
+        ccaa_code: string
+        province_iso_code: string
+        ccaa_iso_code: string
+        is_single_province_ccaa: boolean
+        is_autonomous_city: boolean

@@ -1,0 +1,341 @@
+== 1/4 Parse INE IPV (79540.csv)
+Loaded 2280 rows, years 2007-2025
+
+20 geography values (17 CCAA + Ceuta + Melilla + Nacional):
+  00  Nacional
+  01  Andalucía
+  02  Aragón
+  03  Asturias, Principado de
+  04  Balears, Illes
+  05  Canarias
+  06  Cantabria
+  07  Castilla y León
+  08  Castilla - La Mancha
+  09  Cataluña
+  10  Comunitat Valenciana
+  11  Extremadura
+  12  Galicia
+  13  Madrid, Comunidad de
+  14  Murcia, Región de
+  15  Navarra, Comunidad Foral de
+  16  País Vasco
+  17  Rioja, La
+  18  Ceuta
+  19  Melilla
+
+Rows per index type x metric:
+index_type            metric_type         
+General               Annual average index    380
+                      Annual variation        380
+New dwelling          Annual average index    380
+                      Annual variation        380
+Second-hand dwelling  Annual average index    380
+                      Annual variation        380
+
+Null values: 152 (INE does not publish these series):
+ccaa     index_type          
+Ceuta    New dwelling            38
+         Second-hand dwelling    38
+Melilla  New dwelling            38
+         Second-hand dwelling    38
+
+Base check - Nacional General index 2025 = 100.0 (expect 100)
+
+Wrote data/staging/ine_ipv.parquet
+== 2/4 Parse MIVAU valor tasado (35101000.XLS)
+35101000.XLS: 8 sheets -> ['1995, 1996, 1997, 1998', '1999, 2000, 2001, 2002', '2003, 2004, 2005, 2006', '2007, 2008, 2009, 2010', '2011, 2012, 2013, 2014', '2015, 2016, 2017, 2018', '2019, 2020, 2021, 2022', '2023, 2024, 2025, 2026']
+
+  [1995, 1996, 1997, 1998] 16 quarter cols (1995 Q1 .. 1998 Q4), 18 CCAA headers, 52 provinces
+  [1999, 2000, 2001, 2002] 16 quarter cols (1999 Q1 .. 2002 Q4), 18 CCAA headers, 52 provinces
+  [2003, 2004, 2005, 2006] 16 quarter cols (2003 Q1 .. 2006 Q4), 18 CCAA headers, 52 provinces
+  [2007, 2008, 2009, 2010] 16 quarter cols (2007 Q1 .. 2010 Q4), 18 CCAA headers, 52 provinces
+  [2011, 2012, 2013, 2014] 16 quarter cols (2011 Q1 .. 2014 Q4), 18 CCAA headers, 52 provinces
+  [2015, 2016, 2017, 2018] 16 quarter cols (2015 Q1 .. 2018 Q4), 18 CCAA headers, 52 provinces
+  [2019, 2020, 2021, 2022] 16 quarter cols (2019 Q1 .. 2022 Q4), 18 CCAA headers, 52 provinces
+  [2023, 2024, 2025, 2026] 14 quarter cols (2023 Q1 .. 2026 Q2), 18 CCAA headers, 52 provinces
+
+Reconstructed hierarchy (identical on all 8 sheets): 18 CCAA headers -> 52 provinces
+
+ 1. Andalucía (8)
+      - Almería
+      - Cádiz
+      - Córdoba
+      - Granada
+      - Huelva
+      - Jaén
+      - Málaga
+      - Sevilla
+ 2. Aragón (3)
+      - Huesca
+      - Teruel
+      - Zaragoza
+ 3. Asturias (Principado de) (1)  [single-province: CCAA row = province]
+      - Asturias
+ 4. Balears (Illes) (1)  [single-province: CCAA row = province]
+      - Balears (Illes)
+ 5. Canarias (2)
+      - Palmas (Las)
+      - Santa Cruz de Tenerife
+ 6. Cantabria (1)  [single-province: CCAA row = province]
+      - Cantabria
+ 7. Castilla y León (9)
+      - Ávila
+      - Burgos
+      - León
+      - Palencia
+      - Salamanca
+      - Segovia
+      - Soria
+      - Valladolid
+      - Zamora
+ 8. Castilla-La Mancha (5)
+      - Albacete
+      - Ciudad Real
+      - Cuenca
+      - Guadalajara
+      - Toledo
+ 9. Cataluña (4)
+      - Barcelona
+      - Girona
+      - Lleida
+      - Tarragona
+10. Comunidad Valenciana (3)
+      - Alicante/Alacant
+      - Castellón/Castelló
+      - Valencia/València
+11. Extremadura (2)
+      - Badajoz
+      - Cáceres
+12. Galicia (4)
+      - Coruña (A)
+      - Lugo
+      - Ourense
+      - Pontevedra
+13. Madrid (Comunidad de) (1)  [single-province: CCAA row = province]
+      - Madrid
+14. Murcia (Región de) (1)  [single-province: CCAA row = province]
+      - Murcia
+15. Navarra (Comunidad Foral de) (1)  [single-province: CCAA row = province]
+      - Navarra
+16. País Vasco (3)
+      - Araba/Alava
+      - Gipuzkoa
+      - Bizkaia
+17. Rioja (La) (1)  [single-province: CCAA row = province]
+      - Rioja (La)
+18. Ceuta y Melilla (2)
+      - Ceuta
+      - Melilla
+
+Checks:
+  [PASS] 18 CCAA headers (17 CCAA + 'Ceuta y Melilla')
+  [PASS] 52 provinces (50 + Ceuta + Melilla)
+  [PASS] matches reference list of Spanish provinces exactly
+  [PASS] 7 single-province CCAAs detected structurally
+  [PASS] 'Ceuta y Melilla' has exactly children Ceuta, Melilla
+
+Province table: 6,552 rows = 52 provinces x 126 quarters (1995 Q1 - 2026 Q2)
+  non-null valor_m2: 6,463
+  NULLs by flag:
+    no_data             Ceuta       36 quarters (1995 Q1 .. 2003 Q4)
+    no_data             Melilla     36 quarters (1995 Q1 .. 2003 Q4)
+    not_representative  Cuenca       2 quarters (2012 Q2 .. 2012 Q3)
+    not_representative  Huesca       3 quarters (2011 Q2 .. 2012 Q4)
+    not_representative  Melilla      1 quarters (2013 Q3 .. 2013 Q3)
+    not_representative  Ourense      1 quarters (2012 Q3 .. 2012 Q3)
+    not_representative  Palencia     2 quarters (2012 Q2 .. 2012 Q3)
+    not_representative  Segovia      1 quarters (2012 Q4 .. 2012 Q4)
+    not_representative  Soria        3 quarters (2012 Q2 .. 2012 Q4)
+    not_representative  Teruel       4 quarters (2011 Q2 .. 2012 Q4)
+CCAA/national published table: 2,394 rows (19 geographies incl. TOTAL NACIONAL)
+
+Spot checks (raw sheet values):
+  Madrid   2025 Q4: valor_m2=3902.3  flag=nan  single=True
+  Málaga   2026 Q2: valor_m2=3083.5  flag=nan  single=False
+  Ceuta    2004 Q1: valor_m2=1221.0  flag=nan  single=False
+  Melilla  2013 Q3: valor_m2=nan  flag=not_representative  single=False
+
+Wrote data/staging/mivau_valor_tasado.parquet and data/staging/mivau_valor_tasado_ccaa.parquet
+== 3/4 Load to BigQuery raw dataset
+Dataset spain-housing-pipeline.raw (EU) ready
+  loaded spain-housing-pipeline.raw.ine_ipv                       2,280 rows
+  loaded spain-housing-pipeline.raw.mivau_valor_tasado            6,552 rows
+  loaded spain-housing-pipeline.raw.mivau_valor_tasado_ccaa       2,394 rows
+== 4/4 dbt seed + run + test
+17:54:15  Running with dbt=1.12.5
+17:54:16  Registered adapter: bigquery=1.12.1
+17:54:16  Found 8 models, 64 data tests, 1 seed, 3 sources, 563 macros
+17:54:16  
+17:54:16  Concurrency: 4 threads (target='dev')
+17:54:16  
+17:54:18  1 of 73 START sql view model staging.stg_ine_ipv ............................... [RUN]
+17:54:18  2 of 73 START sql view model staging.stg_mivau_valor_tasado .................... [RUN]
+17:54:18  3 of 73 START sql view model staging.stg_mivau_valor_tasado_ccaa ............... [RUN]
+17:54:18  4 of 73 START seed file seeds.province_ccaa_mapping ............................ [RUN]
+17:54:18  1 of 73 OK created sql view model staging.stg_ine_ipv .......................... [CREATE VIEW (0 processed) in 0.59s]
+17:54:18  5 of 73 START test accepted_values_stg_ine_ipv_index_type__general__new__second_hand  [RUN]
+17:54:18  2 of 73 OK created sql view model staging.stg_mivau_valor_tasado ............... [CREATE VIEW (0 processed) in 0.69s]
+17:54:18  6 of 73 START test accepted_values_stg_ine_ipv_metric_type__index__annual_variation_pct  [RUN]
+17:54:19  3 of 73 OK created sql view model staging.stg_mivau_valor_tasado_ccaa .......... [CREATE VIEW (0 processed) in 0.77s]
+17:54:19  7 of 73 START test not_null_stg_ine_ipv_ccaa_code .............................. [RUN]
+17:54:19  5 of 73 PASS accepted_values_stg_ine_ipv_index_type__general__new__second_hand . [PASS in 1.06s]
+17:54:19  8 of 73 START test not_null_stg_ine_ipv_index_type ............................. [RUN]
+17:54:20  6 of 73 PASS accepted_values_stg_ine_ipv_metric_type__index__annual_variation_pct  [PASS in 1.05s]
+17:54:20  9 of 73 START test not_null_stg_ine_ipv_metric_type ............................ [RUN]
+17:54:20  7 of 73 PASS not_null_stg_ine_ipv_ccaa_code .................................... [PASS in 1.20s]
+17:54:20  10 of 73 START test not_null_stg_ine_ipv_year .................................. [RUN]
+17:54:20  4 of 73 OK loaded seed file seeds.province_ccaa_mapping ........................ [INSERT 52 in 2.60s]
+17:54:20  11 of 73 START test unique_combination_stg_ine_ipv_ccaa_code__index_type__metric_type__year  [RUN]
+17:54:20  8 of 73 PASS not_null_stg_ine_ipv_index_type ................................... [PASS in 1.05s]
+17:54:20  12 of 73 START test accepted_values_stg_mivau_valor_tasado_quarter__False__1__2__3__4  [RUN]
+17:54:21  9 of 73 PASS not_null_stg_ine_ipv_metric_type .................................. [PASS in 1.05s]
+17:54:21  13 of 73 START test accepted_values_stg_mivau_valor_tasado_value_flag__no_data__not_representative  [RUN]
+17:54:21  10 of 73 PASS not_null_stg_ine_ipv_year ........................................ [PASS in 0.92s]
+17:54:21  14 of 73 START test not_null_stg_mivau_valor_tasado_mivau_ccaa ................. [RUN]
+17:54:21  11 of 73 PASS unique_combination_stg_ine_ipv_ccaa_code__index_type__metric_type__year  [PASS in 0.81s]
+17:54:21  15 of 73 START test not_null_stg_mivau_valor_tasado_mivau_province ............. [RUN]
+17:54:21  13 of 73 PASS accepted_values_stg_mivau_valor_tasado_value_flag__no_data__not_representative  [PASS in 0.94s]
+17:54:22  12 of 73 PASS accepted_values_stg_mivau_valor_tasado_quarter__False__1__2__3__4  [PASS in 1.03s]
+17:54:22  16 of 73 START test not_null_stg_mivau_valor_tasado_quarter .................... [RUN]
+17:54:22  17 of 73 START test not_null_stg_mivau_valor_tasado_year ....................... [RUN]
+17:54:22  14 of 73 PASS not_null_stg_mivau_valor_tasado_mivau_ccaa ....................... [PASS in 1.01s]
+17:54:22  18 of 73 START test unique_combination_stg_mivau_valor_tasado_mivau_province__year__quarter  [RUN]
+17:54:22  15 of 73 PASS not_null_stg_mivau_valor_tasado_mivau_province ................... [PASS in 1.25s]
+17:54:22  19 of 73 START test accepted_values_stg_mivau_valor_tasado_ccaa_geo_level__national__ccaa  [RUN]
+17:54:22  16 of 73 PASS not_null_stg_mivau_valor_tasado_quarter .......................... [PASS in 0.97s]
+17:54:22  20 of 73 START test not_null_stg_mivau_valor_tasado_ccaa_mivau_ccaa ............ [RUN]
+17:54:22  17 of 73 PASS not_null_stg_mivau_valor_tasado_year ............................. [PASS in 0.98s]
+17:54:22  21 of 73 START test not_null_stg_mivau_valor_tasado_ccaa_quarter ............... [RUN]
+17:54:23  18 of 73 PASS unique_combination_stg_mivau_valor_tasado_mivau_province__year__quarter  [PASS in 1.10s]
+17:54:23  22 of 73 START test not_null_stg_mivau_valor_tasado_ccaa_year .................. [RUN]
+17:54:23  21 of 73 PASS not_null_stg_mivau_valor_tasado_ccaa_quarter ..................... [PASS in 0.98s]
+17:54:23  23 of 73 START test unique_combination_stg_mivau_valor_tasado_ccaa_mivau_ccaa__year__quarter  [RUN]
+17:54:24  19 of 73 PASS accepted_values_stg_mivau_valor_tasado_ccaa_geo_level__national__ccaa  [PASS in 1.08s]
+17:54:24  24 of 73 START test assert_every_seed_province_has_mivau_data .................. [RUN]
+17:54:24  20 of 73 PASS not_null_stg_mivau_valor_tasado_ccaa_mivau_ccaa .................. [PASS in 1.14s]
+17:54:24  25 of 73 START test assert_ine_ccaa_codes_match_seed ........................... [RUN]
+17:54:24  22 of 73 PASS not_null_stg_mivau_valor_tasado_ccaa_year ........................ [PASS in 0.92s]
+17:54:24  26 of 73 START test assert_seed_matches_parser_hierarchy ....................... [RUN]
+17:54:25  26 of 73 PASS assert_seed_matches_parser_hierarchy ............................. [PASS in 0.80s]
+17:54:25  27 of 73 START test not_null_province_ccaa_mapping_ccaa_code ................... [RUN]
+17:54:25  24 of 73 PASS assert_every_seed_province_has_mivau_data ........................ [PASS in 1.02s]
+17:54:25  28 of 73 START test not_null_province_ccaa_mapping_ccaa_iso_code ............... [RUN]
+17:54:25  23 of 73 PASS unique_combination_stg_mivau_valor_tasado_ccaa_mivau_ccaa__year__quarter  [PASS in 1.10s]
+17:54:25  29 of 73 START test not_null_province_ccaa_mapping_ccaa_name ................... [RUN]
+17:54:25  25 of 73 PASS assert_ine_ccaa_codes_match_seed ................................. [PASS in 1.09s]
+17:54:25  30 of 73 START test not_null_province_ccaa_mapping_mivau_ccaa .................. [RUN]
+17:54:25  27 of 73 PASS not_null_province_ccaa_mapping_ccaa_code ......................... [PASS in 0.65s]
+17:54:25  31 of 73 START test not_null_province_ccaa_mapping_mivau_province .............. [RUN]
+17:54:26  29 of 73 PASS not_null_province_ccaa_mapping_ccaa_name ......................... [PASS in 1.05s]
+17:54:26  28 of 73 PASS not_null_province_ccaa_mapping_ccaa_iso_code ..................... [PASS in 1.09s]
+17:54:26  32 of 73 START test not_null_province_ccaa_mapping_province_code ............... [RUN]
+17:54:26  33 of 73 START test not_null_province_ccaa_mapping_province_iso_code ........... [RUN]
+17:54:26  30 of 73 PASS not_null_province_ccaa_mapping_mivau_ccaa ........................ [PASS in 1.06s]
+17:54:26  34 of 73 START test not_null_province_ccaa_mapping_province_name ............... [RUN]
+17:54:26  31 of 73 PASS not_null_province_ccaa_mapping_mivau_province .................... [PASS in 1.10s]
+17:54:26  35 of 73 START test relationships_stg_mivau_valor_tasado_mivau_province__mivau_province__ref_province_ccaa_mapping_  [RUN]
+17:54:26  32 of 73 PASS not_null_province_ccaa_mapping_province_code ..................... [PASS in 0.68s]
+17:54:26  36 of 73 START test unique_combination_province_ccaa_mapping_mivau_ccaa__mivau_province  [RUN]
+17:54:26  33 of 73 PASS not_null_province_ccaa_mapping_province_iso_code ................. [PASS in 0.79s]
+17:54:26  37 of 73 START test unique_province_ccaa_mapping_mivau_province ................ [RUN]
+17:54:27  34 of 73 PASS not_null_province_ccaa_mapping_province_name ..................... [PASS in 0.77s]
+17:54:27  38 of 73 START test unique_province_ccaa_mapping_province_code ................. [RUN]
+17:54:27  36 of 73 PASS unique_combination_province_ccaa_mapping_mivau_ccaa__mivau_province  [PASS in 0.67s]
+17:54:27  39 of 73 START test unique_province_ccaa_mapping_province_iso_code ............. [RUN]
+17:54:27  37 of 73 PASS unique_province_ccaa_mapping_mivau_province ...................... [PASS in 0.68s]
+17:54:27  40 of 73 START test unique_province_ccaa_mapping_province_name ................. [RUN]
+17:54:27  35 of 73 PASS relationships_stg_mivau_valor_tasado_mivau_province__mivau_province__ref_province_ccaa_mapping_  [PASS in 0.94s]
+17:54:27  41 of 73 START sql view model intermediate.int_mivau_annual .................... [RUN]
+17:54:27  38 of 73 PASS unique_province_ccaa_mapping_province_code ....................... [PASS in 0.72s]
+17:54:28  39 of 73 PASS unique_province_ccaa_mapping_province_iso_code ................... [PASS in 0.64s]
+17:54:28  40 of 73 PASS unique_province_ccaa_mapping_province_name ....................... [PASS in 0.71s]
+17:54:28  41 of 73 OK created sql view model intermediate.int_mivau_annual ............... [CREATE VIEW (0 processed) in 0.81s]
+17:54:28  42 of 73 START test not_null_int_mivau_annual_geo_level ........................ [RUN]
+17:54:28  43 of 73 START test not_null_int_mivau_annual_mivau_ccaa ....................... [RUN]
+17:54:28  44 of 73 START test not_null_int_mivau_annual_year ............................. [RUN]
+17:54:28  45 of 73 START test unique_combination_int_mivau_annual_geo_level__mivau_ccaa__mivau_province__year  [RUN]
+17:54:29  44 of 73 PASS not_null_int_mivau_annual_year ................................... [PASS in 0.95s]
+17:54:29  43 of 73 PASS not_null_int_mivau_annual_mivau_ccaa ............................. [PASS in 1.09s]
+17:54:29  42 of 73 PASS not_null_int_mivau_annual_geo_level .............................. [PASS in 1.12s]
+17:54:29  45 of 73 PASS unique_combination_int_mivau_annual_geo_level__mivau_ccaa__mivau_province__year  [PASS in 1.12s]
+17:54:29  46 of 73 START sql view model intermediate.int_mivau_by_ccaa ................... [RUN]
+17:54:30  46 of 73 OK created sql view model intermediate.int_mivau_by_ccaa .............. [CREATE VIEW (0 processed) in 1.07s]
+17:54:30  47 of 73 START test assert_single_province_ccaa_equals_province ................ [RUN]
+17:54:30  48 of 73 START test not_null_int_mivau_by_ccaa_ccaa_code ....................... [RUN]
+17:54:30  49 of 73 START test not_null_int_mivau_by_ccaa_year ............................ [RUN]
+17:54:30  50 of 73 START test unique_combination_int_mivau_by_ccaa_ccaa_code__year ....... [RUN]
+17:54:32  48 of 73 PASS not_null_int_mivau_by_ccaa_ccaa_code ............................. [PASS in 1.31s]
+17:54:32  49 of 73 PASS not_null_int_mivau_by_ccaa_year .................................. [PASS in 1.37s]
+17:54:32  47 of 73 PASS assert_single_province_ccaa_equals_province ...................... [PASS in 1.39s]
+17:54:32  50 of 73 PASS unique_combination_int_mivau_by_ccaa_ccaa_code__year ............. [PASS in 2.04s]
+17:54:32  51 of 73 START sql table model marts.mart_price_trends_ccaa .................... [RUN]
+17:54:35  51 of 73 OK created sql table model marts.mart_price_trends_ccaa ............... [CREATE TABLE (640.0 rows, 479.8 KiB processed) in 3.10s]
+17:54:35  52 of 73 START test assert_mart_ccaa_covers_all_geographies .................... [RUN]
+17:54:35  53 of 73 START test assert_rebased_indices_equal_100_in_base_year .............. [RUN]
+17:54:35  54 of 73 START test not_null_mart_price_trends_ccaa_ccaa_code .................. [RUN]
+17:54:35  55 of 73 START test not_null_mart_price_trends_ccaa_ccaa_name .................. [RUN]
+17:54:37  53 of 73 PASS assert_rebased_indices_equal_100_in_base_year .................... [PASS in 1.35s]
+17:54:37  56 of 73 START test not_null_mart_price_trends_ccaa_year ....................... [RUN]
+17:54:37  55 of 73 PASS not_null_mart_price_trends_ccaa_ccaa_name ........................ [PASS in 1.37s]
+17:54:37  57 of 73 START test unique_combination_mart_price_trends_ccaa_ccaa_code__year .. [RUN]
+17:54:37  52 of 73 PASS assert_mart_ccaa_covers_all_geographies .......................... [PASS in 1.38s]
+17:54:37  54 of 73 PASS not_null_mart_price_trends_ccaa_ccaa_code ........................ [PASS in 1.42s]
+17:54:38  56 of 73 PASS not_null_mart_price_trends_ccaa_year ............................. [PASS in 0.98s]
+17:54:38  57 of 73 PASS unique_combination_mart_price_trends_ccaa_ccaa_code__year ........ [PASS in 1.26s]
+17:54:38  58 of 73 START sql table model marts.mart_province_growth_summary .............. [RUN]
+17:54:41  58 of 73 OK created sql table model marts.mart_province_growth_summary ......... [CREATE TABLE (52.0 rows, 374.1 KiB processed) in 2.76s]
+17:54:41  59 of 73 START test not_null_mart_province_growth_summary_growth_pct ........... [RUN]
+17:54:41  60 of 73 START test not_null_mart_province_growth_summary_province_code ........ [RUN]
+17:54:41  61 of 73 START test not_null_mart_province_growth_summary_province_iso_code .... [RUN]
+17:54:41  62 of 73 START test not_null_mart_province_growth_summary_province_name ........ [RUN]
+17:54:42  62 of 73 PASS not_null_mart_province_growth_summary_province_name .............. [PASS in 1.18s]
+17:54:42  63 of 73 START test unique_mart_province_growth_summary_province_code .......... [RUN]
+17:54:42  59 of 73 PASS not_null_mart_province_growth_summary_growth_pct ................. [PASS in 1.23s]
+17:54:42  64 of 73 START test unique_mart_province_growth_summary_province_iso_code ...... [RUN]
+17:54:42  60 of 73 PASS not_null_mart_province_growth_summary_province_code .............. [PASS in 1.26s]
+17:54:42  61 of 73 PASS not_null_mart_province_growth_summary_province_iso_code .......... [PASS in 1.31s]
+17:54:43  64 of 73 PASS unique_mart_province_growth_summary_province_iso_code ............ [PASS in 1.03s]
+17:54:43  63 of 73 PASS unique_mart_province_growth_summary_province_code ................ [PASS in 1.10s]
+17:54:43  65 of 73 START sql table model marts.mart_price_trends_province ................ [RUN]
+17:54:46  65 of 73 OK created sql table model marts.mart_price_trends_province ........... [CREATE TABLE (6.6k rows, 411.6 KiB processed) in 2.43s]
+17:54:46  66 of 73 START test accepted_values_mart_price_trends_province_rank_group__Top_5__Bottom_5  [RUN]
+17:54:46  67 of 73 START test not_null_mart_price_trends_province_ccaa_code .............. [RUN]
+17:54:46  68 of 73 START test not_null_mart_price_trends_province_province_code .......... [RUN]
+17:54:46  69 of 73 START test not_null_mart_price_trends_province_province_name .......... [RUN]
+17:54:46  67 of 73 PASS not_null_mart_price_trends_province_ccaa_code .................... [PASS in 0.64s]
+17:54:46  70 of 73 START test not_null_mart_price_trends_province_quarter ................ [RUN]
+17:54:46  66 of 73 PASS accepted_values_mart_price_trends_province_rank_group__Top_5__Bottom_5  [PASS in 0.72s]
+17:54:46  71 of 73 START test not_null_mart_price_trends_province_year ................... [RUN]
+17:54:46  68 of 73 PASS not_null_mart_price_trends_province_province_code ................ [PASS in 0.76s]
+17:54:46  72 of 73 START test relationships_mart_price_trends_province_province_code__province_code__ref_province_ccaa_mapping_  [RUN]
+17:54:46  69 of 73 PASS not_null_mart_price_trends_province_province_name ................ [PASS in 0.82s]
+17:54:46  73 of 73 START test unique_combination_mart_price_trends_province_province_code__year__quarter  [RUN]
+17:54:47  70 of 73 PASS not_null_mart_price_trends_province_quarter ...................... [PASS in 0.62s]
+17:54:47  73 of 73 PASS unique_combination_mart_price_trends_province_province_code__year__quarter  [PASS in 0.61s]
+17:54:47  71 of 73 PASS not_null_mart_price_trends_province_year ......................... [PASS in 0.74s]
+17:54:47  72 of 73 PASS relationships_mart_price_trends_province_province_code__province_code__ref_province_ccaa_mapping_  [PASS in 0.70s]
+17:54:47  
+17:54:47  Finished running 1 seed, 3 table models, 64 data tests, 5 view models in 0 hours 0 minutes and 31.02 seconds (31.02s).
+17:54:47  
+17:54:47  Completed successfully
+17:54:47  
+17:54:47  Done. PASS=73 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=73
+17:54:49  Running with dbt=1.12.5
+17:54:49  Registered adapter: bigquery=1.12.1
+17:54:49  Found 8 models, 64 data tests, 1 seed, 3 sources, 563 macros
+17:54:49  
+17:54:49  Concurrency: 4 threads (target='dev')
+17:54:49  
+17:54:51  Building catalog
+/Users/nohalakhmarti/.pyenv/versions/3.11.7/lib/python3.11/site-packages/agate/type_tester.py:92: RuntimeWarning: "table_owner" does not match the name of any column in this table.
+  warnings.warn('"%s" does not match the name of any column in this table.' % name, RuntimeWarning)
+/Users/nohalakhmarti/.pyenv/versions/3.11.7/lib/python3.11/site-packages/agate/type_tester.py:92: RuntimeWarning: "table_owner" does not match the name of any column in this table.
+  warnings.warn('"%s" does not match the name of any column in this table.' % name, RuntimeWarning)
+/Users/nohalakhmarti/.pyenv/versions/3.11.7/lib/python3.11/site-packages/agate/type_tester.py:92: RuntimeWarning: "table_owner" does not match the name of any column in this table.
+  warnings.warn('"%s" does not match the name of any column in this table.' % name, RuntimeWarning)
+/Users/nohalakhmarti/.pyenv/versions/3.11.7/lib/python3.11/site-packages/agate/type_tester.py:92: RuntimeWarning: "table_owner" does not match the name of any column in this table.
+  warnings.warn('"%s" does not match the name of any column in this table.' % name, RuntimeWarning)
+/Users/nohalakhmarti/.pyenv/versions/3.11.7/lib/python3.11/site-packages/agate/type_tester.py:92: RuntimeWarning: "table_owner" does not match the name of any column in this table.
+  warnings.warn('"%s" does not match the name of any column in this table.' % name, RuntimeWarning)
+17:54:55  Catalog written to /Users/nohalakhmarti/Desktop/spain-housing-pipeline/dbt_project/target/catalog.json
+Done. Marts are in the BigQuery 'marts' dataset.

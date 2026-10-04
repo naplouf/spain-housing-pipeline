@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated data (reproducible from data/raw via run_pipeline.sh)
+data/staging/
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+logs/
+
+# Credentials - never commit
+profiles.yml
+*.json.key
+*service-account*.json
+.env
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Power BI local cache
+*.pbix.bak

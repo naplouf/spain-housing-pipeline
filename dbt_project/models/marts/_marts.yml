@@ -1,0 +1,195 @@
+version: 2
+
+models:
+  - name: mart_price_trends_ccaa
+    description: >
+      INE housing price index and MIVAU appraised value per CCAA and year, side by side.
+      **The two are different measures** - INE IPV is a hedonic transaction-price index
+      (base 2025=100), MIVAU is an average appraised value in EUR/m2. Compare them only
+      via the *_rebased columns (both = 100 in rebase_year) or on separate axes.
+      Grain: ccaa_code x year; ccaa_code '00' is the national benchmark.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [ccaa_code, year]
+    columns:
+      - name: ccaa_code
+        description: "INE CCAA code: 01-17 CCAA, 18 Ceuta, 19 Melilla, 00 Nacional."
+        data_tests: [not_null]
+      - name: ccaa_name
+        description: "Canonical CCAA name."
+        data_tests: [not_null]
+      - name: ccaa_iso_code
+        description: "ISO 3166-2 code of the CCAA / autonomous city (geo key for BI maps); NULL for the national row."
+      - name: year
+        description: "Calendar year. INE covers 2007-2025; MIVAU 1995-2026 (2026 partial)."
+        data_tests: [not_null]
+      - name: is_national
+        description: "True for the national benchmark row (ccaa_code '00')."
+      - name: is_single_province_ccaa
+        description: "True when the CCAA has a single province (MIVAU CCAA value = province value)."
+      - name: is_autonomous_city
+        description: "True for Ceuta and Melilla."
+      - name: n_provinces
+        description: "Provinces mapped to this CCAA in the seed; NULL for national."
+      - name: ine_index_general
+        description: "INE IPV general index, annual average, base 2025 = 100. Unit: index points."
+      - name: ine_index_new
+        description: "INE IPV new-dwelling index (base 2025 = 100). NULL for Ceuta/Melilla (not published)."
+      - name: ine_index_second_hand
+        description: "INE IPV second-hand dwelling index (base 2025 = 100). NULL for Ceuta/Melilla (not published)."
+      - name: ine_annual_variation_pct
+        description: "INE's published annual % variation of the general index."
+      - name: mivau_valor_m2
+        description: "MIVAU average appraised value, annual mean of quarters. Unit: EUR/m2 - NOT comparable in level with INE."
+      - name: mivau_valor_source
+        description: "Which MIVAU row supplied mivau_valor_m2: mivau_published_ccaa | mivau_city_row | mivau_total_nacional."
+      - name: mivau_quarters_available
+        description: "Quarters behind the MIVAU annual mean (4 = complete year)."
+      - name: mivau_is_complete_year
+        description: "True when all 4 MIVAU quarters are present. Growth columns are NULL for incomplete years."
+      - name: mivau_province_simple_mean
+        description: "Unweighted mean of province values (cross-check). Diverges from mivau_valor_m2 where one province dominates volume (e.g. Barcelona)."
+      - name: mivau_yoy_pct
+        description: "MIVAU annual % change vs previous year; only between two complete years."
+      - name: rebase_year
+        description: "Year in which both *_rebased series equal 100 (var base_year)."
+      - name: ine_index_rebased
+        description: "INE general index rebased so rebase_year = 100. Comparable in growth terms with mivau_index_rebased."
+      - name: mivau_index_rebased
+        description: "MIVAU EUR/m2 converted to an index with rebase_year = 100. Comparable in growth terms with ine_index_rebased."
+      - name: rebased_gap_pts
+        description: "mivau_index_rebased - ine_index_rebased. Positive = appraisals have grown faster than INE transaction prices since rebase_year."
+
+  - name: mart_price_trends_province
+    description: >
+      MIVAU appraised value per province and quarter with YoY growth (EUR/m2).
+      Single-province CCAAs and the autonomous cities are kept and flagged, not dropped.
+      Grain: province_code x year x quarter.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [province_code, year, quarter]
+    columns:
+      - name: province_code
+        description: "INE province code 01-52."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('province_ccaa_mapping')
+                field: province_code
+      - name: province_iso_code
+        description: "ISO 3166-2 province code (e.g. ES-MA); geo key for Looker Studio / Power BI maps."
+      - name: province_name
+        description: "Geocodable province name for maps."
+        data_tests: [not_null]
+      - name: mivau_province
+        description: "Province label as published by MIVAU."
+      - name: ccaa_code
+        description: "INE CCAA code of the province."
+        data_tests: [not_null]
+      - name: ccaa_iso_code
+        description: "ISO 3166-2 code of the province's CCAA."
+      - name: ccaa_name
+        description: "Canonical CCAA name."
+      - name: year
+        description: "Calendar year (1995-2026)."
+        data_tests: [not_null]
+      - name: quarter
+        description: "Quarter 1-4."
+        data_tests: [not_null]
+      - name: quarter_start_date
+        description: "First day of the quarter; use as the time axis."
+      - name: valor_m2
+        description: "Average appraised value, EUR/m2. NULL when value_flag is set."
+      - name: value_flag
+        description: "no_data | not_representative ('n.r' in source) | NULL."
+      - name: valor_m2_prior_year
+        description: "valor_m2 in the same quarter of the previous year."
+      - name: yoy_pct
+        description: "% change vs the same quarter of the previous year."
+      - name: rebase_year
+        description: "Base year of index_rebased (var base_year)."
+      - name: index_rebased
+        description: "valor_m2 / province annual mean in rebase_year x 100. Lets provinces with very different EUR/m2 levels share one chart."
+      - name: is_single_province_ccaa
+        description: "True for provinces whose CCAA has no other province."
+      - name: is_autonomous_city
+        description: "True for Ceuta and Melilla."
+      - name: province_note
+        description: "Human-readable note distinguishing single-province CCAAs, autonomous cities and regular provinces."
+      - name: growth_rank
+        description: "Province rank by 2015-2025 growth (from mart_province_growth_summary), denormalised so BI tools without relationships can filter on it."
+      - name: rank_group
+        description: "'Top 5' | 'Bottom 5' | NULL by growth_rank - drives the top/bottom-5 time series."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Top 5', 'Bottom 5']
+
+  - name: mart_province_growth_summary
+    description: >
+      One row per province: cumulative MIVAU appraised-value growth over the full window
+      (base_year -> last_year) and the recent window (recent_base_year -> last_year),
+      benchmarked against its CCAA (MIVAU and INE) and the national figure.
+      Complete years only. Grain: province_code.
+    columns:
+      - name: province_code
+        description: "INE province code 01-52."
+        data_tests: [unique, not_null]
+      - name: province_iso_code
+        description: "ISO 3166-2 province code (e.g. ES-MA); geo key for maps."
+        data_tests: [unique, not_null]
+      - name: province_name
+        description: "Geocodable province name."
+        data_tests: [not_null]
+      - name: ccaa_code
+        description: "INE CCAA code."
+      - name: ccaa_iso_code
+        description: "ISO 3166-2 code of the province's CCAA."
+      - name: ccaa_name
+        description: "Canonical CCAA name."
+      - name: is_single_province_ccaa
+        description: "Province = CCAA; growth_vs_ccaa_pp is 0 by construction."
+      - name: is_autonomous_city
+        description: "Ceuta or Melilla; growth_vs_ccaa_pp is 0 by construction."
+      - name: base_year
+        description: "Start of the full window (2015)."
+      - name: recent_base_year
+        description: "Start of the recent window (2020)."
+      - name: last_year
+        description: "Last complete year in both sources (2025)."
+      - name: valor_m2_base
+        description: "Province annual mean EUR/m2 in base_year."
+      - name: valor_m2_recent_base
+        description: "Province annual mean EUR/m2 in recent_base_year."
+      - name: valor_m2_last
+        description: "Province annual mean EUR/m2 in last_year."
+      - name: growth_pct
+        description: "Cumulative % growth base_year -> last_year."
+        data_tests: [not_null]
+      - name: cagr_pct
+        description: "Compound annual growth rate over the full window, %."
+      - name: growth_pct_recent
+        description: "Cumulative % growth recent_base_year -> last_year."
+      - name: ccaa_mivau_growth_pct
+        description: "Growth of the province's CCAA (MIVAU published value) over the full window."
+      - name: ccaa_mivau_growth_pct_recent
+        description: "Same, recent window."
+      - name: ccaa_ine_growth_pct
+        description: "Growth of the CCAA's INE general index over the full window (transaction prices, not appraisals)."
+      - name: ccaa_ine_growth_pct_recent
+        description: "Same, recent window."
+      - name: national_mivau_growth_pct
+        description: "National MIVAU growth over the full window."
+      - name: national_ine_growth_pct
+        description: "National INE general index growth over the full window."
+      - name: growth_vs_ccaa_pp
+        description: "growth_pct - ccaa_mivau_growth_pct, percentage points. Positive = province outgrew its region."
+      - name: growth_vs_national_pp
+        description: "growth_pct - national_mivau_growth_pct, percentage points."
+      - name: growth_rank
+        description: "1 = fastest-growing province over the full window."
+      - name: rank_group
+        description: "'Top 5' | 'Bottom 5' | NULL by growth_rank."

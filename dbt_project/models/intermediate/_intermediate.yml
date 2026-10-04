@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: int_mivau_annual
+    description: >
+      MIVAU quarterly values aggregated to annual MEAN of available quarters (chosen to
+      match INE's annual-average index). Includes provinces and MIVAU's published CCAA /
+      national aggregates. Grain: geo_level x mivau_ccaa x mivau_province x year.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [geo_level, mivau_ccaa, mivau_province, year]
+    columns:
+      - name: geo_level
+        description: "province | ccaa | national"
+        data_tests: [not_null]
+      - name: mivau_ccaa
+        description: "MIVAU CCAA header label (or 'TOTAL NACIONAL')."
+        data_tests: [not_null]
+      - name: mivau_province
+        description: "MIVAU province label; NULL for ccaa/national rows."
+      - name: year
+        data_tests: [not_null]
+      - name: valor_m2_annual_mean
+        description: "Mean of available quarterly EUR/m2 values, rounded to 1 dp."
+      - name: quarters_available
+        description: "Number of non-null quarters averaged (0-4)."
+      - name: is_complete_year
+        description: "True when all 4 quarters have a value."
+      - name: quarters_not_representative
+        description: "Quarters flagged 'n.r' by MIVAU."
+
+  - name: int_mivau_by_ccaa
+    description: >
+      MIVAU annual value at INE CCAA grain. Headline value = MIVAU's published CCAA figure
+      (volume-weighted by construction); province_simple_mean = unweighted province
+      average from the seed rollup, kept as a cross-check. Ceuta/Melilla use each city's
+      own row. ccaa_code '00' = TOTAL NACIONAL. Grain: ccaa_code x year.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [ccaa_code, year]
+    columns:
+      - name: ccaa_code
+        data_tests: [not_null]
+      - name: ccaa_name
+      - name: year
+        data_tests: [not_null]
+      - name: valor_m2
+        description: "Annual mean appraised value, EUR/m2."
+      - name: valor_source
+        description: "mivau_published_ccaa | mivau_city_row | mivau_total_nacional"
+      - name: quarters_available
+      - name: is_complete_year
+      - name: province_simple_mean
+        description: "Unweighted mean of the CCAA's province annual values (cross-check only)."
+      - name: n_provinces
+      - name: n_provinces_with_data
+      - name: is_single_province_ccaa
+      - name: is_autonomous_city
+      - name: is_national

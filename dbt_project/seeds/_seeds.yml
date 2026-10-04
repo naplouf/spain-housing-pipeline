@@ -1,0 +1,42 @@
+version: 2
+
+seeds:
+  - name: province_ccaa_mapping
+    description: >
+      Hardcoded mapping of Spain's 50 provinces + 2 autonomous cities (52 rows) from the
+      MIVAU labels to INE province and CCAA codes. Special case: MIVAU lists Ceuta and
+      Melilla under one combined header "Ceuta y Melilla"; INE treats them as two
+      autonomous cities (CCAA codes 18 and 19). This seed is where that split is defined.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [mivau_ccaa, mivau_province]
+    columns:
+      - name: province_code
+        description: "INE province code, 01-52."
+        data_tests: [unique, not_null]
+      - name: province_iso_code
+        description: "ISO 3166-2 province code (e.g. ES-MA). Unambiguous geo key for BI maps."
+        data_tests: [unique, not_null]
+      - name: province_name
+        description: "Display / geocodable province name (e.g. 'A Coruña', 'Las Palmas')."
+        data_tests: [unique, not_null]
+      - name: mivau_province
+        description: "Province label exactly as in the MIVAU file; join key to staging."
+        data_tests: [unique, not_null]
+      - name: mivau_ccaa
+        description: "CCAA header the province sits under in the MIVAU file."
+        data_tests: [not_null]
+      - name: ccaa_code
+        description: "INE CCAA code (01-17 CCAA, 18 Ceuta, 19 Melilla); join key to INE."
+        data_tests: [not_null]
+      - name: ccaa_iso_code
+        description: "ISO 3166-2 code of the autonomous community / city (e.g. ES-AN, ES-CE)."
+        data_tests: [not_null]
+      - name: ccaa_name
+        description: "Short canonical CCAA name used in marts and the dashboard."
+        data_tests: [not_null]
+      - name: is_single_province_ccaa
+        description: "True for the 7 CCAAs with one province (Asturias, Illes Balears, Cantabria, Madrid, Murcia, Navarra, La Rioja)."
+      - name: is_autonomous_city
+        description: "True for Ceuta and Melilla."
