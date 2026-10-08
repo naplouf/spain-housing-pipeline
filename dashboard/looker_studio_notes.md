@@ -75,6 +75,10 @@ Data source: **Province growth summary**.
 > 2nd-level subdivisions. If the polygons don't fill, use `ccaa_iso_code` (1st level) with
 > `ccaa_mivau_growth_pct` for a CCAA-level map, and keep the province detail in the bar chart. The ranked bar chart is
 > the authoritative province view either way, and Ceuta/Melilla are too small to see on any map.
+>
+> *As built:* Looker Studio did not fill Spanish province polygons, so the live report uses a
+> **bubble** layer at province locations coloured by `ccaa_mivau_growth_pct` (regional growth).
+> Zoom the map viewport to Iberia + Canarias so the Canary Islands bubbles are visible.
 
 ### Page 2: Top 5 vs bottom 5 provinces
 Data source: **Province quarterly trends**.

@@ -138,11 +138,19 @@ Full log: [`docs/pipeline_run_output.txt`](docs/pipeline_run_output.txt).
 
 Looker Studio, connected directly to the BigQuery `marts` dataset (build spec: [`dashboard/looker_studio_notes.md`](dashboard/looker_studio_notes.md)). The same data model and measures are documented for Power BI in [`dashboard/power_bi_notes.md`](dashboard/power_bi_notes.md).
 
-1. **Province growth:** map + ranked bar chart of 2015→2025 growth, with the national line.
-2. **Top 5 vs bottom 5:** quarterly time series, rebased to 2015 = 100 so 1,000 €/m² and 3,700 €/m² provinces share a scale.
-3. **INE vs MIVAU by CCAA:** both series rebased to 2015 = 100, plus a dual-axis view (index left, €/m² right). Never one raw axis.
+**Live report: [Looker Studio dashboard](https://datastudio.google.com/reporting/3fd27efc-5b6c-4504-9abe-bb06c93ac6bf)**
 
-<!-- TODO: report link + screenshots: dashboard/screenshots/01_province_growth.png, 02_top_bottom_5.png, 03_ine_vs_mivau.png -->
+**1. Where prices grew:** 2015→2025 growth for all 52 provinces against the national +44.2% line, with a map coloured by regional growth.
+
+![Province growth](dashboard/screenshots/01_province_growth.png)
+
+**2. Top 5 vs bottom 5 provinces:** appraised value rebased to 2015 = 100, so a 1,000 €/m² province and a 3,700 €/m² province share one scale. The full 1995–2026 history shows the 2007 peak, the bust, and how sharply the top 5 pulled away after 2015 while the bottom 5 dipped after 2015 and by 2025 were back only around their 2015 level (three still below it).
+
+![Top 5 vs bottom 5](dashboard/screenshots/02_top_bottom_5.png)
+
+**3. INE price index vs MIVAU appraisals:** both rebased to 2015 = 100 (top); a dual-axis view in native units, with the index on the left and €/m² on the right, never one raw axis (bottom left); and the 2025 gap for every region (bottom right).
+
+![INE vs MIVAU](dashboard/screenshots/03_ine_vs_mivau.png)
 
 ---
 
