@@ -136,7 +136,7 @@ Full log: [`docs/pipeline_run_output.txt`](docs/pipeline_run_output.txt).
 
 ## Dashboard
 
-Looker Studio, connected directly to the BigQuery `marts` dataset (build spec: [`dashboard/looker_studio_notes.md`](dashboard/looker_studio_notes.md)). The same data model and measures are documented for Power BI in [`dashboard/power_bi_notes.md`](dashboard/power_bi_notes.md).
+Looker Studio, connected directly to the BigQuery `marts` dataset.
 
 **Live report: [Looker Studio dashboard](https://datastudio.google.com/reporting/3fd27efc-5b6c-4504-9abe-bb06c93ac6bf)**
 
@@ -170,7 +170,7 @@ Looker Studio, connected directly to the BigQuery `marts` dataset (build spec: [
 data/raw/                 source files as downloaded (INE 79540.csv, MIVAU 35101000.XLS)
 ingestion/                parsers, BigQuery loader, requirements.txt
 dbt_project/              seeds/, models/{staging,intermediate,marts}/, tests/, macros/
-dashboard/                looker_studio_notes.md, power_bi_notes.md, screenshots/
+dashboard/screenshots/    dashboard and dbt lineage screenshots
 docs/                     captured pipeline run output
 run_pipeline.sh           one-command end-to-end run
 ```
